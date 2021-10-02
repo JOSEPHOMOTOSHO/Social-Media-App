@@ -1,0 +1,14 @@
+import { Route, Switch } from "react-router-dom";
+import Home from "./core/Home";
+
+const Mainrouter = () => {
+  return (
+    <div>
+      <Switch>
+        <Route exact path="/" component={Home} />
+      </Switch>
+    </div>
+  );
+};
+
+export default Mainrouter;
