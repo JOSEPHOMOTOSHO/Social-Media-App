@@ -37,7 +37,7 @@ async function getAllUsers(req, res) {
     }
 }
 exports.getAllUsers = getAllUsers;
-//MIDDLEWARE TO GET A USER: 
+//MIDDLEWARE TO GET A USER:
 async function userById(req, res, next, id) {
     try {
         let user = await userModel_1.default.findById(id);
@@ -51,7 +51,7 @@ async function userById(req, res, next, id) {
     }
     catch (err) {
         return res.status(400).json({
-            error: 'Could not retrieve User'
+            error: "Could not retrieve User",
         });
     }
 }
@@ -77,7 +77,7 @@ async function updateUser(req, res) {
     catch (err) {
         console.log(err);
         return res.status(400).json({
-            error: dbErrorHandler_1.default.getErrorMessage(err)
+            error: dbErrorHandler_1.default.getErrorMessage(err),
         });
     }
 }
@@ -93,7 +93,7 @@ async function deleteUser(req, res) {
     }
     catch (err) {
         return res.status(400).json({
-            err: dbErrorHandler_1.default.getErrorMessage(err)
+            err: dbErrorHandler_1.default.getErrorMessage(err),
         });
     }
 }

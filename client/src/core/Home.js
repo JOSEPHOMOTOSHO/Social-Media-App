@@ -4,6 +4,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import CardMedia from "@material-ui/core/CardMedia";
 import unicornbike from "../images/unicornbike.jpg";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -25,21 +26,24 @@ const useStyles = makeStyles((theme) => ({
 const Home = () => {
   const classes = useStyles();
   return (
-    <Card className={classes.card}>
-      <Typography variant="h6" className={classes.title}>
-        Home Page
-      </Typography>
-      <CardMedia
-        className={classes.media}
-        image={unicornbike}
-        title="Unicorn Bicycle"
-      />
-      <CardContent>
-        <Typography variant="body2" component="p">
-          Welcome to the MERN Skeleton home page
+    <>
+      <Card className={classes.card}>
+        <Typography variant="h6" className={classes.title}>
+          Home Page
         </Typography>
-      </CardContent>
-    </Card>
+        <CardMedia
+          className={classes.media}
+          image={unicornbike}
+          title="Unicorn Bicycle"
+        />
+        <CardContent>
+          <Typography variant="body2" component="p">
+            Welcome to the MERN Skeleton home page
+          </Typography>
+        </CardContent>
+      </Card>
+      <Link to="/users">Users</Link>
+    </>
   );
 };
 
