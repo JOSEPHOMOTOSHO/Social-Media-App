@@ -23,19 +23,19 @@ const getAllUsers = async (signal) => {
     // console.log(await response.json(), "response from api call.");
     return await response.json();
   } catch (error) {
-    console.log(error, "errored");
+    console.log(error, "error");
   }
 };
 
 const getSingleUser = async (params, credentials, signal) => {
   try {
-    let response = await fetch("/api/users/" + params.id, {
+    let response = await fetch("/api/users/" + params.userId, {
       method: "GET",
       signal: signal,
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: "Bearer" + credentials.t,
+        Authorization: "Bearer" + " " + credentials.t,
       },
     });
     return await response.json();

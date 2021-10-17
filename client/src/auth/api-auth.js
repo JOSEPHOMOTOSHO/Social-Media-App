@@ -1,6 +1,6 @@
 const signIn = async (user) => {
   try {
-    const response = await fetch("/auth/sigin", {
+    const response = await fetch("/auth/signin", {
       method: "POST",
       headers: {
         Accept: "Application/json",
@@ -9,7 +9,7 @@ const signIn = async (user) => {
       credentials: "include",
       body: JSON.stringify(user),
     });
-    return await response;
+    return await response.json();
   } catch (error) {
     console.log(error);
   }

@@ -43,6 +43,11 @@ const Home = () => {
         </CardContent>
       </Card>
       <Link to="/users">Users</Link>
+      <br />
+      <Link to="/signup">signup</Link>
+      <br />
+      <Link to="/signin">signin</Link>
+      <br />
     </>
   );
 };
