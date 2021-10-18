@@ -54,11 +54,8 @@ const Profile = ({ match }) => {
         console.log("i am user data", data);
       }
     });
-
-    console.log("i am signal", signal);
-
     return function cleanup() {
-      return abortController.abort();
+      abortController.abort();
     };
   }, [match.params.userId]);
 
@@ -87,7 +84,7 @@ const Profile = ({ match }) => {
                 </IconButton>
               </Link>
 
-              {/* <DeleteUser userId={user._id} /> */}
+              <DeleteUser userId={user._id} />
             </ListItemSecondaryAction>
           )}
         </ListItem>
