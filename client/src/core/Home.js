@@ -5,7 +5,6 @@ import Typography from "@material-ui/core/Typography";
 import CardMedia from "@material-ui/core/CardMedia";
 import unicornbike from "../images/unicornbike.jpg";
 import { Link } from "react-router-dom";
-
 const useStyles = makeStyles((theme) => ({
   card: {
     maxWidth: 600,
@@ -42,12 +41,12 @@ const Home = () => {
           </Typography>
         </CardContent>
       </Card>
-      <Link to="/users">Users</Link>
+      {/* <Link to="/users">Users</Link>
       <br />
       <Link to="/signup">signup</Link>
       <br />
       <Link to="/signin">signin</Link>
-      <br />
+      <br /> */}
     </>
   );
 };
