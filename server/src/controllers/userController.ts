@@ -26,7 +26,7 @@ async function addUser(req: Request, res: Response, next: NextFunction) {
 //GET ALL THE USERS:GET REQUEST
 async function getAllUsers(req: Request, res: Response) {
   try {
-    const users = await User.find({}).select("name email createdAt");
+    const users = await User.find({}).select("name email about createdAt");
     res.status(200).json(users);
   } catch (err) {
     return res.status(400).json({

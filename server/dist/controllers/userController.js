@@ -27,7 +27,7 @@ exports.addUser = addUser;
 //GET ALL THE USERS:GET REQUEST
 async function getAllUsers(req, res) {
     try {
-        const users = await userModel_1.default.find({}).select("name email createdAt");
+        const users = await userModel_1.default.find({}).select("name email about createdAt");
         res.status(200).json(users);
     }
     catch (err) {

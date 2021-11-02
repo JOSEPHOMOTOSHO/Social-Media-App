@@ -6,6 +6,7 @@ import crypto from 'crypto'
 export interface User extends mongoose.Document {
   name: string;
   email: string;
+  about: string;
   hash_password: string;
   _password: string;
   salt: string;
@@ -28,6 +29,10 @@ const userModel = new Schema(
       unique: true,
       match: new RegExp(/.+\@.+\..+/),
       required: [true, "Email is required"],
+    },
+    about: {
+      type: String,
+      trim: true,
     },
     hash_password: {
       type: String,
@@ -85,5 +90,4 @@ userModel.path("hash_password").validate(function (this: User) {
 }, "");
 
 const UserModel = mongoose.model<User>("users", userModel);
-
 export default UserModel;

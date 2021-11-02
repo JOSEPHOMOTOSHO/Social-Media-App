@@ -16,7 +16,7 @@ async function signin(req, res) {
             return res.status(401).json({ error: "User not found" });
         }
         if (!user.authenticate(req.body.password)) {
-            res.status(400).json("password isn't correct");
+            res.status(400).json({ error: "password isn't correct" });
         }
         const token = jsonwebtoken_1.default.sign({ _id: user._id }, config_1.default.jwtSecret);
         res.cookie("t", token, { expires: new Date(Date.now() + 9999 * 1000) });
@@ -26,11 +26,12 @@ async function signin(req, res) {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                about: user.about
             },
         });
     }
     catch (err) {
-        return res.status(401).json({ error: "could not sign in" });
+        return res.status(401).json({ error: "could not sign in", err });
     }
 }
 exports.signin = signin;

@@ -43,6 +43,7 @@ const EditUser = ({ match }) => {
     name: "",
     password: "",
     email: "",
+    about: "",
     redirectToProfile: false,
     error: "",
   });
@@ -83,6 +84,7 @@ const EditUser = ({ match }) => {
       name: values.name || undefined,
       password: values.password || undefined,
       email: values.email || undefined,
+      about: values.about || undefined,
     };
 
     updateUser(
@@ -143,6 +145,16 @@ const EditUser = ({ match }) => {
             value={values.password}
             onChange={handleChange("password")}
             margin="normal"
+          />
+
+          <br />
+          <TextField
+            id="multiline-flexible"
+            label="About"
+            multiline
+            rows="2"
+            value={values.about}
+            onChange={handleChange("about")}
           />
           <br />
           {values.error && (

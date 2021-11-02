@@ -38,6 +38,10 @@ const userModel = new mongoose_1.Schema({
         match: new RegExp(/.+\@.+\..+/),
         required: [true, "Email is required"],
     },
+    about: {
+        type: String,
+        trim: true,
+    },
     hash_password: {
         type: String,
         required: "Password is required",
