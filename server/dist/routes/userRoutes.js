@@ -15,6 +15,10 @@ router
     .delete(authController_1.requireSignIn, authController_1.hasAuthorization, userController_1.deleteUser);
 router.route("/api/users/photo/:userId").get(userController_1.photo, userController_1.defaultPhoto);
 router.route("/api/users/defaultphoto").get(userController_1.defaultPhoto);
+router.route("/api/users/follow").put(authController_1.requireSignIn, userController_1.addFollowing, userController_1.addFollower);
+router
+    .route("/api/users/unfollow")
+    .put(authController_1.requireSignIn, userController_1.removeFollowing, userController_1.removeFollower);
 router.param('userId', userController_1.userById);
 exports.default = router;
 //# sourceMappingURL=userRoutes.js.map

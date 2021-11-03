@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.photo = exports.defaultPhoto = exports.userById = exports.deleteUser = exports.updateUser = exports.getSingleUser = exports.getAllUsers = exports.addUser = void 0;
+exports.removeFollower = exports.removeFollowing = exports.addFollower = exports.addFollowing = exports.photo = exports.defaultPhoto = exports.userById = exports.deleteUser = exports.updateUser = exports.getSingleUser = exports.getAllUsers = exports.addUser = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const extend_1 = __importDefault(require("lodash/extend"));
 const dbErrorHandler_1 = __importDefault(require("../helper/dbErrorHandler"));
@@ -43,7 +43,10 @@ exports.getAllUsers = getAllUsers;
 //MIDDLEWARE TO GET A USER:
 async function userById(req, res, next, id) {
     try {
-        let user = await userModel_1.default.findById(id);
+        let user = await userModel_1.default.findById(id)
+            .populate("following", "_id name")
+            .populate("followers", "_id name")
+            .exec();
         if (!user) {
             return res.status(400).json({
                 error: "User not found",
@@ -129,4 +132,66 @@ async function defaultPhoto(req, res) {
     return res.sendFile(path_1.default.join(__dirname, "..", "..", "public/images/defphoto.png"));
 }
 exports.defaultPhoto = defaultPhoto;
+async function addFollowing(req, res, next) {
+    try {
+        await userModel_1.default.findByIdAndUpdate(req.body.userId, {
+            $push: { following: req.body.followId },
+        });
+        next();
+    }
+    catch (err) {
+        return res.status(400).json({
+            error: dbErrorHandler_1.default.getErrorMessage(err),
+        });
+    }
+}
+exports.addFollowing = addFollowing;
+async function addFollower(req, res) {
+    try {
+        let result = await userModel_1.default.findByIdAndUpdate(req.body.followId, { $push: { followers: req.body.userId } }, { new: true })
+            .populate("following", "_id name")
+            .populate("followers", "_id name")
+            .exec();
+        result.hashed_password = undefined;
+        result.salt = undefined;
+        return res.json(result);
+    }
+    catch (err) {
+        return res.status(400).json({
+            error: dbErrorHandler_1.default.getErrorMessage(err),
+        });
+    }
+}
+exports.addFollower = addFollower;
+async function removeFollowing(req, res, next) {
+    try {
+        await userModel_1.default.findByIdAndUpdate(req.body.userId, {
+            $push: { following: req.body.followId },
+        });
+        next();
+    }
+    catch (err) {
+        return res.status(400).json({
+            error: dbErrorHandler_1.default.getErrorMessage(err),
+        });
+    }
+}
+exports.removeFollowing = removeFollowing;
+async function removeFollower(req, res) {
+    try {
+        let result = await userModel_1.default.findByIdAndUpdate(req.body.followId, { $push: { followers: req.body.userId } }, { new: true })
+            .populate("following", "_id name")
+            .populate("followers", "_id name")
+            .exec();
+        result.hashed_password = undefined;
+        result.salt = undefined;
+        return res.json(result);
+    }
+    catch (err) {
+        return res.status(400).json({
+            error: dbErrorHandler_1.default.getErrorMessage(err),
+        });
+    }
+}
+exports.removeFollower = removeFollower;
 //# sourceMappingURL=userController.js.map

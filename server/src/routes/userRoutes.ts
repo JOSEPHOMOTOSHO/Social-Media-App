@@ -10,6 +10,10 @@ import {
   userById,
   defaultPhoto,
   photo,
+  addFollowing,
+  addFollower,
+  removeFollowing,
+  removeFollower,
 } from "../controllers/userController";
 import { requireSignIn, hasAuthorization } from "../controllers/authController";
 var router = express.Router();
@@ -23,6 +27,10 @@ router
   .delete(requireSignIn, hasAuthorization, deleteUser);
 router.route("/api/users/photo/:userId").get(photo, defaultPhoto);
 router.route("/api/users/defaultphoto").get(defaultPhoto);
+router.route("/api/users/follow").put(requireSignIn, addFollowing, addFollower);
+router
+  .route("/api/users/unfollow")
+  .put(requireSignIn, removeFollowing, removeFollower);
 
 router.param('userId',userById)
 export default router;

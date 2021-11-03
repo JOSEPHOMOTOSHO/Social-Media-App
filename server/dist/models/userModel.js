@@ -46,6 +46,8 @@ const userModel = new mongoose_1.Schema({
         data: Buffer,
         contentType: String,
     },
+    following: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
+    followers: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
     hash_password: {
         type: String,
         required: "Password is required",

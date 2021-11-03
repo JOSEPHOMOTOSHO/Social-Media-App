@@ -51,7 +51,10 @@ async function userById(
   id: string
 ) {
   try {
-    let user = await User.findById(id);
+    let user = await User.findById(id)
+      .populate("following", "_id name")
+      .populate("followers", "_id name")
+      .exec();
 
     if (!user) {
       return res.status(400).json({
@@ -136,6 +139,80 @@ async function defaultPhoto(req: Requestextended, res: Response) {
   );
 }
 
+async function addFollowing(
+  req: Requestextended,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    await User.findByIdAndUpdate(req.body.userId, {
+      $push: { following: req.body.followId },
+    });
+    next();
+  } catch (err) {
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err),
+    });
+  }
+}
+
+async function addFollower(req: Requestextended, res: Response) {
+  try {
+    let result: any = await User.findByIdAndUpdate(
+      req.body.followId,
+      { $push: { followers: req.body.userId } },
+      { new: true }
+    )
+      .populate("following", "_id name")
+      .populate("followers", "_id name")
+      .exec();
+    result.hashed_password = undefined;
+    result.salt = undefined;
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err),
+    });
+  }
+}
+
+async function removeFollowing(
+  req: Requestextended,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    await User.findByIdAndUpdate(req.body.userId, {
+      $push: { following: req.body.followId },
+    });
+    next();
+  } catch (err) {
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err),
+    });
+  }
+}
+
+async function removeFollower(req: Requestextended, res: Response) {
+  try {
+    let result: any = await User.findByIdAndUpdate(
+      req.body.followId,
+      { $push: { followers: req.body.userId } },
+      { new: true }
+    )
+      .populate("following", "_id name")
+      .populate("followers", "_id name")
+      .exec();
+    result.hashed_password = undefined;
+    result.salt = undefined;
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err),
+    });
+  }
+}
+
 export {
   addUser,
   getAllUsers,
@@ -145,4 +222,8 @@ export {
   userById,
   defaultPhoto,
   photo,
+  addFollowing,
+  addFollower,
+  removeFollowing,
+  removeFollower,
 };
