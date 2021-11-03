@@ -2,9 +2,17 @@ import User from "../models/userModel";
 import extend from "lodash/extend";
 import { Request, Response, NextFunction } from "express";
 import errorHandler from "../helper/dbErrorHandler";
+import formidable from "formidable";
+import fs from "fs";
+import path from "path";
+import IncomingForm from "formidable/Formidable";
 
 interface Requestextended extends Request {
   profile?: any; // or any other type. yes
+}
+
+interface formidablextended extends IncomingForm {
+  keepExtensions?: any;
 }
 
 //create a new user: POST REQUEST
@@ -17,7 +25,7 @@ async function addUser(req: Request, res: Response, next: NextFunction) {
       message: "User successfully signed up",
     });
   } catch (err: any) {
-    res.status(400).json({
+    return res.status(400).json({
       error: errorHandler.getErrorMessage(err),
     });
   }
@@ -27,7 +35,7 @@ async function addUser(req: Request, res: Response, next: NextFunction) {
 async function getAllUsers(req: Request, res: Response) {
   try {
     const users = await User.find({}).select("name email about createdAt");
-    res.status(200).json(users);
+    return res.status(200).json(users);
   } catch (err) {
     return res.status(400).json({
       error: errorHandler.getErrorMessage(err),
@@ -46,7 +54,7 @@ async function userById(
     let user = await User.findById(id);
 
     if (!user) {
-      res.status(400).json({
+      return res.status(400).json({
         error: "User not found",
       });
     }
@@ -68,20 +76,34 @@ async function getSingleUser(req: Requestextended, res: Response) {
 
 //UPDATE A USER IN THE DB: PUT REQUEST
 async function updateUser(req: Requestextended, res: Response) {
-  try {
+  let form: formidablextended = new formidable.IncomingForm();
+  form.keepExtensions = true;
+  form.parse(req, async (err: any, fields: any, files: any) => {
+    if (err) {
+      return res.status(400).json({
+        error: "Photo could not be uploaded",
+      });
+    }
     let user = req.profile;
-    user = extend(user, req.body);
-    await user.save();
-    console.log(user);
-    user.hash_password = undefined;
-    user.salt = undefined;
-    res.json(user);
-  } catch (err) {
-    console.log(err);
-    return res.status(400).json({
-      error: errorHandler.getErrorMessage(err),
-    });
-  }
+    user = extend(user, fields);
+    // console.log("mogbomoya", files.photo);
+    if (files.photo) {
+      user.photo.data = fs.readFileSync(files.photo.filepath);
+      user.photo.contentType = files.photo.mimetype;
+    }
+    try {
+      await user.save();
+      // console.log(user);
+      user.hash_password = undefined;
+      user.salt = undefined;
+      return res.json(user);
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({
+        error: errorHandler.getErrorMessage(err),
+      });
+    }
+  });
 }
 
 //DELETE A USER FROM DB: DELETE REQUEST
@@ -91,12 +113,27 @@ async function deleteUser(req: Requestextended, res: Response) {
     let deletedUser = await user.remove();
     deletedUser.hash_password = undefined;
     deletedUser.salt = undefined;
-    res.json(deletedUser);
+    return res.json(deletedUser);
   } catch (err) {
     return res.status(400).json({
       err: errorHandler.getErrorMessage(err),
     });
   }
+}
+
+async function photo(req: Requestextended, res: Response, next: NextFunction) {
+  if (req.profile.photo.data) {
+    res.set("Content-Type", req.profile.photo.contentType);
+    return res.send(req.profile.photo.data);
+  } else {
+    next();
+  }
+}
+
+async function defaultPhoto(req: Requestextended, res: Response) {
+  return res.sendFile(
+    path.join(__dirname, "..", "..", "public/images/defphoto.png")
+  );
 }
 
 export {
@@ -106,4 +143,6 @@ export {
   updateUser,
   deleteUser,
   userById,
+  defaultPhoto,
+  photo,
 };

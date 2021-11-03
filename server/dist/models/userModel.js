@@ -42,6 +42,10 @@ const userModel = new mongoose_1.Schema({
         type: String,
         trim: true,
     },
+    photo: {
+        data: Buffer,
+        contentType: String,
+    },
     hash_password: {
         type: String,
         required: "Password is required",

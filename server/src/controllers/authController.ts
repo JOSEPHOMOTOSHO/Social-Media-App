@@ -16,7 +16,7 @@ async function signin(req: Request, res: Response) {
     }
 
     if (!user.authenticate(req.body.password)) {
-      res.status(400).json({ error: "password isn't correct"});
+      return res.status(400).json({ error: "password isn't correct" });
     }
     const token = jwt.sign({ _id: user._id }, config.jwtSecret);
     res.cookie("t", token, { expires: new Date(Date.now() + 9999 * 1000) });

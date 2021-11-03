@@ -7,6 +7,7 @@ export interface User extends mongoose.Document {
   name: string;
   email: string;
   about: string;
+  photo: string;
   hash_password: string;
   _password: string;
   salt: string;
@@ -33,6 +34,10 @@ const userModel = new Schema(
     about: {
       type: String,
       trim: true,
+    },
+    photo: {
+      data: Buffer,
+      contentType: String,
     },
     hash_password: {
       type: String,

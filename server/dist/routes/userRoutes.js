@@ -13,6 +13,8 @@ router
     .get(authController_1.requireSignIn, userController_1.getSingleUser)
     .put(authController_1.requireSignIn, authController_1.hasAuthorization, userController_1.updateUser)
     .delete(authController_1.requireSignIn, authController_1.hasAuthorization, userController_1.deleteUser);
+router.route("/api/users/photo/:userId").get(userController_1.photo, userController_1.defaultPhoto);
+router.route("/api/users/defaultphoto").get(userController_1.defaultPhoto);
 router.param('userId', userController_1.userById);
 exports.default = router;
 //# sourceMappingURL=userRoutes.js.map
