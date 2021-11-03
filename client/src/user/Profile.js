@@ -62,6 +62,9 @@ const Profile = ({ match }) => {
   if (redirectToSignIn) {
     <Redirect to="/signin" />;
   }
+  const photoUrl = user._id
+    ? `/api/users/photo/${user._id}?${new Date().getTime()}`
+    : "/api/users/defaultphoto";
 
   return (
     <Paper className={classes.root} elevation={4}>
@@ -71,7 +74,7 @@ const Profile = ({ match }) => {
       <List dense>
         <ListItem>
           <ListItemAvatar>
-            <Avatar>
+            <Avatar src={photoUrl}>
               <Person />
             </Avatar>
           </ListItemAvatar>
