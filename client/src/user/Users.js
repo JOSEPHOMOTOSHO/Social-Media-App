@@ -14,6 +14,7 @@ import ArrowForward from "@material-ui/icons/ArrowForward";
 import Person from "@material-ui/icons/Person";
 import { Link } from "react-router-dom";
 import { Icon } from "@material-ui/core";
+import FindPeople from "./FindPeople";
 
 const useStyles = makeStyles((theme) => ({
   root: theme.mixins.gutters({
@@ -48,32 +49,35 @@ const User = () => {
   }, []);
 
   return (
-    <Paper className={classes.root} elevation={4}>
-      <Typography variant="h6" className={classes.title}>
-        All Users
-      </Typography>
-      <List dense>
-        {users.map((item) => {
-          return (
-            <Link to={`/user/${item._id}`} key={item._id}>
-              <ListItem button>
-                <ListItemAvatar>
-                  <Avatar>
-                    <Person />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={item.name} />
-                <ListItemSecondaryAction>
-                  <IconButton>
-                    <ArrowForward />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            </Link>
-          );
-        })}
-      </List>
-    </Paper>
+    <>
+      <Paper className={classes.root} elevation={4}>
+        <Typography variant="h6" className={classes.title}>
+          All Users
+        </Typography>
+        <List dense>
+          {users.map((item) => {
+            return (
+              <Link to={`/user/${item._id}`} key={item._id}>
+                <ListItem button>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <Person />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={item.name} />
+                  <ListItemSecondaryAction>
+                    <IconButton>
+                      <ArrowForward />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              </Link>
+            );
+          })}
+        </List>
+      </Paper>
+      <FindPeople />
+    </>
   );
 };
 

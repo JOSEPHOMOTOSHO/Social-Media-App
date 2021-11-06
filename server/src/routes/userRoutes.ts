@@ -14,11 +14,17 @@ import {
   addFollower,
   removeFollowing,
   removeFollower,
+  findPeople,
 } from "../controllers/userController";
 import { requireSignIn, hasAuthorization } from "../controllers/authController";
 var router = express.Router();
 
 router.route("/api/users").get(getAllUsers).post(addUser);
+router.route("/api/users/defaultphoto").get(defaultPhoto);
+router.route("/api/users/follow").put(requireSignIn, addFollowing, addFollower);
+router
+  .route("/api/users/unfollow")
+  .put(requireSignIn, removeFollowing, removeFollower);
 
 router
   .route("/api/users/:userId")
@@ -26,11 +32,9 @@ router
   .put(requireSignIn, hasAuthorization, updateUser)
   .delete(requireSignIn, hasAuthorization, deleteUser);
 router.route("/api/users/photo/:userId").get(photo, defaultPhoto);
-router.route("/api/users/defaultphoto").get(defaultPhoto);
-router.route("/api/users/follow").put(requireSignIn, addFollowing, addFollower);
-router
-  .route("/api/users/unfollow")
-  .put(requireSignIn, removeFollowing, removeFollower);
+
+router.route("/api/users/findpeople/:userId").get(requireSignIn, findPeople);
+
 
 router.param('userId',userById)
 export default router;

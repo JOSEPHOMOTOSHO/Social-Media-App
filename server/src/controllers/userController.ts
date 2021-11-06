@@ -6,6 +6,7 @@ import formidable from "formidable";
 import fs from "fs";
 import path from "path";
 import IncomingForm from "formidable/Formidable";
+import UserModel from "../models/userModel";
 
 interface Requestextended extends Request {
   profile?: any; // or any other type. yes
@@ -62,10 +63,11 @@ async function userById(
       });
     }
     req.profile = user;
+    // console.log("user user", req.profile);
     next();
   } catch (err) {
     return res.status(400).json({
-      error: "Could not retrieve User",
+      error: "Could not retrieve User " + err,
     });
   }
 }
@@ -74,6 +76,7 @@ async function userById(
 async function getSingleUser(req: Requestextended, res: Response) {
   req.profile.hash_password = undefined;
   req.profile.salt = undefined;
+  console.log("iama", req.profile);
   return res.status(200).json(req.profile);
 }
 
@@ -183,10 +186,12 @@ async function removeFollowing(
 ) {
   try {
     await User.findByIdAndUpdate(req.body.userId, {
-      $push: { following: req.body.followId },
+      $pull: { following: req.body.unfollowId },
     });
+
     next();
   } catch (err) {
+    console.log(err);
     return res.status(400).json({
       error: errorHandler.getErrorMessage(err),
     });
@@ -196,16 +201,30 @@ async function removeFollowing(
 async function removeFollower(req: Requestextended, res: Response) {
   try {
     let result: any = await User.findByIdAndUpdate(
-      req.body.followId,
-      { $push: { followers: req.body.userId } },
+      req.body.unfollowId,
+      { $pull: { followers: req.body.userId } },
       { new: true }
     )
       .populate("following", "_id name")
       .populate("followers", "_id name")
       .exec();
-    result.hashed_password = undefined;
+    result.hash_password = undefined;
     result.salt = undefined;
     return res.json(result);
+  } catch (err) {
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err),
+    });
+  }
+}
+
+async function findPeople(req: Requestextended, res: Response) {
+  let following = req.profile.following;
+  following.push(req.profile._id);
+  try {
+    let users = await User.find({ _id: { $nin: following } }).select("name");
+    console.log("na me be users", users);
+    return res.json(users);
   } catch (err) {
     return res.status(400).json({
       error: errorHandler.getErrorMessage(err),
@@ -226,4 +245,5 @@ export {
   addFollower,
   removeFollowing,
   removeFollower,
+  findPeople,
 };

@@ -8,8 +8,8 @@ export interface User extends mongoose.Document {
   email: string;
   about: string;
   photo: string;
-  following: {}[];
-  followers: {}[];
+  following: string[];
+  followers: string[];
   hash_password: string;
   _password: string;
   salt: string;
@@ -41,8 +41,8 @@ const userModel = new Schema(
       data: Buffer,
       contentType: String,
     },
-    following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
     hash_password: {
       type: String,
       required: "Password is required",

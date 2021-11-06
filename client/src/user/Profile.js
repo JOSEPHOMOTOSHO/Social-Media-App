@@ -16,6 +16,9 @@ import Edit from "@material-ui/icons/Edit";
 import Person from "@material-ui/icons/Person";
 import Divider from "@material-ui/core/Divider";
 import DeleteUser from "./DeleteUser";
+import FollowProfileButton from "./FollowProfileButton";
+import FollowGrid from "./FollowGrid";
+import { postsByUser } from "../post/api-post";
 
 const useStyles = makeStyles((theme) => ({
   root: theme.mixins.gutters({
@@ -32,14 +35,20 @@ const useStyles = makeStyles((theme) => ({
 
 const Profile = ({ match }) => {
   const classes = useStyles();
-  const [user, setUser] = useState({});
-  const [redirectToSignIn, setRedirectToSignIn] = useState(false);
-  console.log(user);
+  const [values, setValues] = useState({
+    user: { following: [], followers: [] },
+    viewedUser: {},
+    redirectToSignIn: false,
+    following: false,
+  });
+
+  const [posts, setPosts] = useState([]);
+
+  const jwt = isAuthenticated();
 
   useEffect(() => {
     const abortController = new AbortController();
     const signal = abortController.signal;
-    const jwt = isAuthenticated();
     getSingleUser(
       {
         userId: match.params.userId,
@@ -48,10 +57,10 @@ const Profile = ({ match }) => {
       signal
     ).then((data) => {
       if (data && data.error) {
-        setRedirectToSignIn(true);
+        setValues({ ...values, redirectToSignIn: true });
       } else {
-        setUser(data);
-        console.log("i am user data", data);
+        let following = checkfollow(data);
+        setValues({ ...values, viewedUser: data, following: following });
       }
     });
     return function cleanup() {
@@ -59,49 +68,114 @@ const Profile = ({ match }) => {
     };
   }, [match.params.userId]);
 
-  if (redirectToSignIn) {
+  function checkfollow(user) {
+    let match = user.followers.some((follower) => {
+      return follower._id == jwt.user._id;
+    });
+    return match;
+  }
+
+  const clickFollowButton = (callApi) => {
+    callApi(
+      {
+        userId: jwt.user._id,
+      },
+      {
+        t: jwt.token,
+      },
+      values.viewedUser._id
+    ).then((data) => {
+      if (data.error) {
+        setValues({ ...values, error: data.error });
+      } else {
+        setValues({
+          ...values,
+          viewedUser: data,
+          following: !values.following,
+        });
+        console.log(values);
+      }
+    });
+  };
+
+  const loadPost = () => {
+    postsByUser({ userId: values.viewedUser }, { t: jwt.token }).then(
+      (data) => {
+        if (data.error) {
+          console.log(data.error);
+        } else {
+          setPosts(data);
+        }
+      }
+    );
+  };
+
+  const removePosts = (post) => {
+    const allPost = [...posts];
+    const indexOfPost = allPost.indexOf(post);
+    allPost.splice(indexOfPost, 1);
+    setPosts(allPost);
+  };
+
+  if (values.redirectToSignIn) {
     <Redirect to="/signin" />;
   }
-  const photoUrl = user._id
-    ? `/api/users/photo/${user._id}?${new Date().getTime()}`
+  const photoUrl = values.viewedUser._id
+    ? `/api/users/photo/${values.viewedUser._id}?${new Date().getTime()}`
     : "/api/users/defaultphoto";
 
   return (
-    <Paper className={classes.root} elevation={4}>
-      <Typography variant="h6" className={classes.title}>
-        Profile
-      </Typography>
-      <List dense>
-        <ListItem>
-          <ListItemAvatar>
-            <Avatar src={photoUrl}>
-              <Person />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={user.name} secondary={user.email} />
-          {isAuthenticated().user && isAuthenticated().user._id == user._id && (
-            <ListItemSecondaryAction>
-              <Link to={"/user/edit/" + user._id}>
-                <IconButton aria-label="Edit" color="primary">
-                  <Edit />
-                </IconButton>
-              </Link>
+    <>
+      <Paper className={classes.root} elevation={4}>
+        <Typography variant="h6" className={classes.title}>
+          Profile
+        </Typography>
+        <List dense>
+          <ListItem>
+            <ListItemAvatar>
+              <Avatar src={photoUrl}>
+                <Person />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={values.viewedUser.name}
+              secondary={values.viewedUser.email}
+            />
+            {isAuthenticated().user &&
+            isAuthenticated().user._id == values.viewedUser._id ? (
+              <ListItemSecondaryAction>
+                <Link to={"/user/edit/" + values.viewedUser._id}>
+                  <IconButton aria-label="Edit" color="primary">
+                    <Edit />
+                  </IconButton>
+                </Link>
 
-              <DeleteUser userId={user._id} />
-            </ListItemSecondaryAction>
-          )}
-        </ListItem>
-        <ListItem>
-          <ListItemText primary={user.about} />
-        </ListItem>
-        <Divider />
-        <ListItem>
-          <ListItemText
-            primary={"Joined: " + new Date(user.createdAt).toDateString()}
-          />
-        </ListItem>
-      </List>
-    </Paper>
+                <DeleteUser userId={values.viewedUser._id} />
+              </ListItemSecondaryAction>
+            ) : (
+              <FollowProfileButton
+                following={values.following}
+                onButtonClick={clickFollowButton}
+              />
+            )}
+          </ListItem>
+          <ListItem>
+            <ListItemText primary={values.viewedUser.about} />
+          </ListItem>
+          <Divider />
+          <ListItem>
+            <ListItemText
+              primary={
+                "Joined: " +
+                new Date(values.viewedUser.createdAt).toDateString()
+              }
+            />
+          </ListItem>
+        </List>
+      </Paper>
+      <FollowGrid people={values.viewedUser.followers} head={"followers"} />
+      <FollowGrid people={values.viewedUser.following} head={"following"} />
+    </>
   );
 };
 

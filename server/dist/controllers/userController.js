@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeFollower = exports.removeFollowing = exports.addFollower = exports.addFollowing = exports.photo = exports.defaultPhoto = exports.userById = exports.deleteUser = exports.updateUser = exports.getSingleUser = exports.getAllUsers = exports.addUser = void 0;
+exports.findPeople = exports.removeFollower = exports.removeFollowing = exports.addFollower = exports.addFollowing = exports.photo = exports.defaultPhoto = exports.userById = exports.deleteUser = exports.updateUser = exports.getSingleUser = exports.getAllUsers = exports.addUser = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const extend_1 = __importDefault(require("lodash/extend"));
 const dbErrorHandler_1 = __importDefault(require("../helper/dbErrorHandler"));
@@ -53,11 +53,12 @@ async function userById(req, res, next, id) {
             });
         }
         req.profile = user;
+        // console.log("user user", req.profile);
         next();
     }
     catch (err) {
         return res.status(400).json({
-            error: "Could not retrieve User",
+            error: "Could not retrieve User " + err,
         });
     }
 }
@@ -66,6 +67,7 @@ exports.userById = userById;
 async function getSingleUser(req, res) {
     req.profile.hash_password = undefined;
     req.profile.salt = undefined;
+    console.log("iama", req.profile);
     return res.status(200).json(req.profile);
 }
 exports.getSingleUser = getSingleUser;
@@ -166,11 +168,12 @@ exports.addFollower = addFollower;
 async function removeFollowing(req, res, next) {
     try {
         await userModel_1.default.findByIdAndUpdate(req.body.userId, {
-            $push: { following: req.body.followId },
+            $pull: { following: req.body.unfollowId },
         });
         next();
     }
     catch (err) {
+        console.log(err);
         return res.status(400).json({
             error: dbErrorHandler_1.default.getErrorMessage(err),
         });
@@ -179,11 +182,11 @@ async function removeFollowing(req, res, next) {
 exports.removeFollowing = removeFollowing;
 async function removeFollower(req, res) {
     try {
-        let result = await userModel_1.default.findByIdAndUpdate(req.body.followId, { $push: { followers: req.body.userId } }, { new: true })
+        let result = await userModel_1.default.findByIdAndUpdate(req.body.unfollowId, { $pull: { followers: req.body.userId } }, { new: true })
             .populate("following", "_id name")
             .populate("followers", "_id name")
             .exec();
-        result.hashed_password = undefined;
+        result.hash_password = undefined;
         result.salt = undefined;
         return res.json(result);
     }
@@ -194,4 +197,19 @@ async function removeFollower(req, res) {
     }
 }
 exports.removeFollower = removeFollower;
+async function findPeople(req, res) {
+    let following = req.profile.following;
+    following.push(req.profile._id);
+    try {
+        let users = await userModel_1.default.find({ _id: { $nin: following } }).select("name");
+        console.log("na me be users", users);
+        return res.json(users);
+    }
+    catch (err) {
+        return res.status(400).json({
+            error: dbErrorHandler_1.default.getErrorMessage(err),
+        });
+    }
+}
+exports.findPeople = findPeople;
 //# sourceMappingURL=userController.js.map
