@@ -19,6 +19,7 @@ import DeleteUser from "./DeleteUser";
 import FollowProfileButton from "./FollowProfileButton";
 import FollowGrid from "./FollowGrid";
 import { postsByUser } from "../post/api-post";
+import ProfileTabs from "./ProfileTabs";
 
 const useStyles = makeStyles((theme) => ({
   root: theme.mixins.gutters({
@@ -61,6 +62,7 @@ const Profile = ({ match }) => {
       } else {
         let following = checkfollow(data);
         setValues({ ...values, viewedUser: data, following: following });
+        loadPost(data._id);
       }
     });
     return function cleanup() {
@@ -98,16 +100,14 @@ const Profile = ({ match }) => {
     });
   };
 
-  const loadPost = () => {
-    postsByUser({ userId: values.viewedUser }, { t: jwt.token }).then(
-      (data) => {
-        if (data.error) {
-          console.log(data.error);
-        } else {
-          setPosts(data);
-        }
+  const loadPost = (user) => {
+    postsByUser({ userId: user }, { t: jwt.token }).then((data) => {
+      if (data.error) {
+        console.log(data.error);
+      } else {
+        setPosts(data);
       }
-    );
+    });
   };
 
   const removePosts = (post) => {
@@ -173,8 +173,11 @@ const Profile = ({ match }) => {
           </ListItem>
         </List>
       </Paper>
-      <FollowGrid people={values.viewedUser.followers} head={"followers"} />
-      <FollowGrid people={values.viewedUser.following} head={"following"} />
+      <ProfileTabs
+        user={values.viewedUser}
+        posts={posts}
+        removePostUpdate={removePosts}
+      />
     </>
   );
 };

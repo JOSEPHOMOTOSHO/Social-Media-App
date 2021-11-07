@@ -15,6 +15,7 @@ import Person from "@material-ui/icons/Person";
 import { Link } from "react-router-dom";
 import { Icon } from "@material-ui/core";
 import FindPeople from "./FindPeople";
+import NewsFeed from "../post/NewsFeed";
 
 const useStyles = makeStyles((theme) => ({
   root: theme.mixins.gutters({
@@ -57,7 +58,7 @@ const User = () => {
         <List dense>
           {users.map((item) => {
             return (
-              <Link to={`/user/${item._id}`} key={item._id}>
+              <Link to={`/users/${item._id}`} key={item._id}>
                 <ListItem button>
                   <ListItemAvatar>
                     <Avatar>
@@ -77,6 +78,7 @@ const User = () => {
         </List>
       </Paper>
       <FindPeople />
+      <NewsFeed />
     </>
   );
 };

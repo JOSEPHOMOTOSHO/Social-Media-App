@@ -47,8 +47,6 @@ const requireSignIn = expressjwt({
   userProperty: "auth",
 });
 
-
-
 async function hasAuthorization(
   req: Requestextended,
   res: Response,

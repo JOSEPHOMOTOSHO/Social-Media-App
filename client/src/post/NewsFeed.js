@@ -3,10 +3,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
-import auth from "./../auth/auth-helper";
 import PostList from "./PostList";
 import { listNewsFeed } from "./api-post.js";
 import NewPost from "./NewPost";
+import { isAuthenticated } from "../auth/auth-helper";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -30,6 +30,8 @@ function NewsFeed() {
   const classes = useStyles();
   const [posts, setPosts] = useState([]);
 
+  const jwt = isAuthenticated();
+
   useEffect(() => {
     const abortController = new AbortController();
     const signal = abortController.signal;
@@ -44,7 +46,7 @@ function NewsFeed() {
       }
     );
     return function cleanUp() {
-      return abortController.abort();
+      abortController.abort();
     };
   }, []);
 
@@ -60,6 +62,7 @@ function NewsFeed() {
     allPost.splice(postIndex, 1);
     setPosts(allPost);
   }
+  // console.log("i believe i am posts", posts);
 
   return (
     <Card>
@@ -71,3 +74,5 @@ function NewsFeed() {
     </Card>
   );
 }
+
+export default NewsFeed;

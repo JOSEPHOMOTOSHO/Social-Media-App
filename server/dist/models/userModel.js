@@ -36,6 +36,7 @@ const userModel = new mongoose_1.Schema({
         trim: true,
         unique: true,
         match: new RegExp(/.+\@.+\..+/),
+        lowercase: true,
         required: [true, "Email is required"],
     },
     about: {

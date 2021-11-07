@@ -45,6 +45,7 @@ const Signin = ({ location }) => {
     redirectToReferrer: false,
     error: "",
   });
+  
   const handleChange = (name) => (event) => {
     setValues({
       ...values,
@@ -75,7 +76,6 @@ const Signin = ({ location }) => {
       pathname: "/",
     },
   };
-  console.log(from);
 
   const { redirectToReferrer } = values;
   // if the Redirect component is rendered (if redirectToReferrer is true) then we'd be taken to either home or the last location received in props

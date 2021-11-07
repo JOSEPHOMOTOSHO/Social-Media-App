@@ -1,5 +1,17 @@
 import mongoose, { Schema } from "mongoose";
 
+interface photo {
+  data: Buffer;
+  contentType: String;
+}
+
+export interface Post extends mongoose.Document {
+  text: string;
+  photo: photo;
+  likes: string;
+  postedBy: string;
+  comments: string[];
+}
 const postModel = new Schema(
   {
     text: {
@@ -42,5 +54,5 @@ const postModel = new Schema(
   }
 );
 
-const PostModel = mongoose.model("posts", postModel);
+const PostModel = mongoose.model<Post>("posts", postModel);
 export default PostModel;

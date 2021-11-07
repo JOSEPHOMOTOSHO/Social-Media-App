@@ -121,7 +121,7 @@ export default function FindPeople() {
                   </ListItemAvatar>
                   <ListItemText primary={item.name} />
                   <ListItemSecondaryAction className={classes.follow}>
-                    <Link to={"/user/" + item._id}>
+                    <Link to={"/users/" + item._id}>
                       <IconButton
                         variant="contained"
                         color="secondary"
